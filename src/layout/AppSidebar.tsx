@@ -178,7 +178,7 @@ const AppSidebar: React.FC = () => {
 
 
             {/* User Profile */}
-            {!hideUserProfileSection && (
+            {/* {!hideUserProfileSection && (
               <div>
                 <Link
                   to="/profile"
@@ -200,7 +200,7 @@ const AppSidebar: React.FC = () => {
                   )}
                 </Link>
               </div>
-            )}
+            )} */}
           </div>
         </nav>
         
