@@ -13,6 +13,7 @@ import Loading from "./Loading";
 interface POData {
   PLANNED_TIMESTAMP: string;
   INDENT_NO: string;
+  INDENTER: string;
   VRNO: string;
   VRDATE: string;
   VENDOR_NAME: string;
@@ -20,7 +21,7 @@ interface POData {
   QTYORDER: number;
   QTYEXECUTE: number;
   BALANCE_QTY?: number;
- 
+
   UM: string;
 }
 
@@ -124,6 +125,8 @@ const INDENT_FIELD_KEYS = [
   "indentno",
 ];
 
+const INDENTER_FIELD_KEYS = ["INDENTER", "indenter", "Indenter"];
+
 const extractStringField = (
   record: Record<string, unknown>,
   keys: string[],
@@ -189,6 +192,8 @@ const normalize = (po: Partial<POData> | Record<string, unknown>, index = 0): PO
   //   console.log(`[Normalize ${index}] Final extracted INDENT_NO:`, indentNo);
   // }
 
+  const indenter = extractStringField(raw, INDENTER_FIELD_KEYS);
+
   return {
     PLANNED_TIMESTAMP: String(raw.PLANNED_TIMESTAMP ?? ""),
     VRNO: String(raw.VRNO ?? ""),
@@ -200,6 +205,7 @@ const normalize = (po: Partial<POData> | Record<string, unknown>, index = 0): PO
     QTYORDER: order,
     QTYEXECUTE: exec,
     BALANCE_QTY: balance,
+    INDENTER: indenter,
   };
 };
 
@@ -446,11 +452,12 @@ export default function PendingIndents() {
                 <thead className="sticky top-0 z-20 bg-slate-100 shadow-sm">
                   <tr>
                     <th className="sticky left-0 z-30 bg-slate-100 border-b px-3 py-2 text-left font-semibold">
-                     Indent No
+                      Indent No
                     </th>
-                    
-                    <th className="bg-slate-100 border-b px-3 py-2 text-center font-semibold">S.No</th>
-                    <th className="bg-slate-100 border-b px-3 py-2 font-semibold"> PO No. </th>
+                        <th className="bg-slate-100 border-b px-3 py-2 text-center font-semibold">S.No</th>
+                    <th className="bg-slate-100 border-b px-3 py-2 font-semibold">Indenter</th>
+                
+                    <th className="bg-slate-100 border-b px-3 py-2 font-semibold">PO No.</th>
                     <th className="bg-slate-100 border-b px-3 py-2 font-semibold">Planned Time Stamp</th>
                     <th className="bg-slate-100 border-b px-3 py-2 font-semibold">PO Date</th>
                     <th className="bg-slate-100 border-b px-3 py-2 font-semibold">Vendor Name</th>
@@ -483,10 +490,11 @@ export default function PendingIndents() {
                         <td className="sticky left-0 z-10 bg-white border-b px-3 py-1 text-left font-medium">
                           {  row.INDENT_NO} 
                         </td>
-                        
-                        <td className="border-b px-2 py-1 text-center">
+                           <td className="border-b px-2 py-1 text-center">
                           {pendingStartIndex + index + 1}
                         </td>
+                        <td className="border-b px-2 py-1">{row.INDENTER}</td>
+                     
                         <td className="border-b px-2 py-1">  {row.VRNO}  </td>
                         <td className="border-b px-2 py-1">
                           {formatDateTime(row.PLANNED_TIMESTAMP)}
@@ -550,10 +558,12 @@ export default function PendingIndents() {
                 <thead className="sticky top-0 z-20 bg-slate-100 shadow-sm">
                   <tr>
                     <th className="sticky left-0 z-30 bg-slate-100 border-b px-3 py-2 text-left font-semibold">
-                      PO No.
+                    Indent No.
                     </th>
-                    <th className="bg-slate-100 border-b px-3 py-2 font-semibold">Indent No.</th>
-                    <th className="bg-slate-100 border-b px-3 py-2 text-center font-semibold">S.No</th>
+                      <th className="bg-slate-100 border-b px-3 py-2 text-center font-semibold">S.No</th>
+                    <th className="bg-slate-100 border-b px-3 py-2 font-semibold">    PO No.    </th>
+                    <th className="bg-slate-100 border-b px-3 py-2 font-semibold">Indenter</th>
+                  
                     <th className="bg-slate-100 border-b px-3 py-2 font-semibold">Planned Time Stamp</th>
                     <th className="bg-slate-100 border-b px-3 py-2 font-semibold">PO Date</th>
                     <th className="bg-slate-100 border-b px-3 py-2 font-semibold">Vendor Name</th>
@@ -565,9 +575,9 @@ export default function PendingIndents() {
                   </tr>
                 </thead>
                 <tbody>
-                  {loading ? (
-                    <tr>
-                      <td colSpan={11} className="py-6 text-center text-slate-500 text-sm">
+                    {loading ? (
+                      <tr>
+                        <td colSpan={12} className="py-6 text-center text-slate-500 text-sm">
                         <div className="flex items-center justify-center gap-2">
                           <Loader size={16} />
                           Loading...
@@ -575,8 +585,8 @@ export default function PendingIndents() {
                       </td>
                     </tr>
                   ) : historyPageRows.length === 0 ? (
-                    <tr>
-                      <td colSpan={11} className="py-6 text-center text-slate-400 text-sm">
+                      <tr>
+                        <td colSpan={12} className="py-6 text-center text-slate-400 text-sm">
                         No Received POs Found
                       </td>
                     </tr>
@@ -584,12 +594,14 @@ export default function PendingIndents() {
                     historyPageRows.map((row, index) => (
                       <tr key={row.VRNO + index} className="hover:bg-slate-50">
                         <td className="sticky left-0 z-10 bg-white border-b px-3 py-1 text-left font-medium">
-                          {row.VRNO}
+                           {row.INDENT_NO} 
                         </td>
-                        <td className="border-b px-2 py-1">{row.INDENT_NO}</td>
-                        <td className="border-b px-2 py-1 text-center">
+                          <td className="border-b px-2 py-1 text-center">
                           {historyStartIndex + index + 1}
                         </td>
+                        <td className="border-b px-2 py-1">  {row.VRNO}  </td>
+                        <td className="border-b px-2 py-1">{row.INDENTER}</td>
+                      
                         <td className="border-b px-2 py-1">
                           {formatDateTime(row.PLANNED_TIMESTAMP)}
                         </td>
