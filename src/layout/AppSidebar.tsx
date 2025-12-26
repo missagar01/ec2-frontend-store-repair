@@ -6,26 +6,6 @@ import { useSidebar } from "../context/SidebarContext";
 import { useAuth } from "../context/AuthContext";
 import Logo from "../asset/Logo.jpeg";
 
-// Repair menu items - hidden from sidebar (only Store section visible)
-// const repairSubItems = [
-//   { name: "Dashboard", path: "/repair/dashboard" },
-//   { name: "Indent", path: "/repair/indent" },
-//   { name: "Sent to Vendor", path: "/repair/sent-to-vendor" },
-//   { name: "Check Machine", path: "/repair/check-machine" },
-//   { name: "Store In", path: "/repair/store-in" },
-//   { name: "Make Payment", path: "/repair/make-payment" },
-// ];
-
-// Admin repair pages (all repair pages) - hidden from sidebar
-// const repairAdminSubItems = [
-//   { name: "Dashboard", path: "/repair/dashboard" },
-//   { name: "Indent", path: "/repair/indent" },
-//   { name: "Sent to Vendor", path: "/repair/sent-to-vendor" },
-//   { name: "Check Machine", path: "/repair/check-machine" },
-//   { name: "Store In", path: "/repair/store-in" },
-//   { name: "Make Payment", path: "/repair/make-payment" },
-// ];
-
 const storeAdminSubItems = [
   { name: "Dashboard", path: "/store/dashboard" },
   { name: "Create PO", path: "/store/create-po" },
@@ -53,7 +33,7 @@ const storeAdminLimitedSubItems = [
   { name: "Dashboard", path: "/store/dashboard" },
   { name: "Indent", path: "/store/approve-indent" },
   { name: "Purchase Order", path: "/store/pending-indents" },
-  { name: "Administration", path: "/store/administration" },
+  // { name: "Administration", path: "/store/administration" },
   { name: "Inventory", path: "/store/inventory" },
   { name: "Repair Gate Pass", path: "/store/repair-gate-pass" },
 ];
@@ -101,18 +81,6 @@ const AppSidebar: React.FC = () => {
     },
     [isAdmin, isStoreOutOnly, isApproveIndentOnly]
   );
-
-  // Repair menu items - hidden from sidebar
-  // const repairMenuItems = useMemo(
-  //   () => {
-  //     // Repair menu: Admin sees limited pages, regular users see all based on access
-  //     return isAdmin
-  //       ? repairAdminSubItems // Admin sees limited repair pages
-  //       : [...repairSubItems, { name: "All Repairs", path: "/repair/all" }]; // Regular users see all
-  //   },
-  //   [isAdmin]
-  // );
-
 
   return (
     <aside
@@ -176,31 +144,6 @@ const AppSidebar: React.FC = () => {
               </div>
             )}
 
-
-            {/* User Profile */}
-            {/* {!hideUserProfileSection && (
-              <div>
-                <Link
-                  to="/profile"
-                  className={`menu-item group ${
-                    isActive("/profile") ? "menu-item-active" : "menu-item-inactive"
-                  }`}
-                >
-                  <span
-                    className={`menu-item-icon-size ${
-                      isActive("/profile")
-                        ? "menu-item-icon-active"
-                        : "menu-item-icon-inactive"
-                    }`}
-                  >
-                    <UserCircleIcon />
-                  </span>
-                  {(isExpanded || isHovered || isMobileOpen) && (
-                    <span className="menu-item-text">User Profile</span>
-                  )}
-                </Link>
-              </div>
-            )} */}
           </div>
         </nav>
         

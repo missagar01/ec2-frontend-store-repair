@@ -5,18 +5,6 @@ import UserProfiles from "./pages/UserProfiles";
 import Login from "./components/auth/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { useAuth } from "./context/AuthContext";
-
-// Repair System Pages - Import from pages/repair folder
-import RepairAll from "./pages/repair/RepairAll";
-import RepairDashboard from "./pages/repair/RepairDashboard";
-import Indent from "./pages/repair/Indent";
-import SentToVendor from "./pages/repair/SentToVendor";
-import CheckMachine from "./pages/repair/CheckMachine";
-import StoreIn from "./pages/repair/StoreIn";
-import MakePayment from "./pages/repair/MakePayment";
-import RepairCheckPending from "./pages/repair/RepairCheckPending";
-
-// Store System Pages - Import from pages/store folder
 import PendingPOs from "./pages/store/PendingPOs";
 import IndentAll from "./pages/store/IndentAll";
 import Administration from "./pages/store/Administration";
@@ -49,23 +37,11 @@ function AppRoutes() {
       {/* Public Routes */}
       <Route
         path="/signin"
-        element={
-          isAuthenticated ? (
-            <Navigate to="/" replace />
-          ) : (
-            <Login />
-          )
-        }
+        element={isAuthenticated ? <Navigate to="/" replace /> : <Login />}
       />
       <Route
         path="/login"
-        element={
-          isAuthenticated ? (
-            <Navigate to="/" replace />
-          ) : (
-            <Login />
-          )
-        }
+        element={isAuthenticated ? <Navigate to="/" replace /> : <Login />}
       />
 
       {/* Protected Routes */}
@@ -79,37 +55,41 @@ function AppRoutes() {
         {/* Default landing → store dashboard */}
         <Route path="/" element={<Navigate to="/store/dashboard" replace />} />
         <Route path="/profile" element={<UserProfiles />} />
-
-        {/* Repair System Routes */}
-        <Route path="/repair/dashboard" element={<RepairDashboard />} />
-        <Route path="/repair/all" element={<RepairAll />} />
-        <Route path="/repair/indent" element={<Indent />} />
-        <Route path="/repair/sent-to-vendor" element={<SentToVendor />} />
-        <Route path="/repair/check-machine" element={<CheckMachine />} />
-        <Route path="/repair/check/pending" element={<RepairCheckPending />} />
-        <Route path="/repair/store-in" element={<StoreIn />} />
-        <Route path="/repair/make-payment" element={<MakePayment />} />
-
         {/* Store System Routes */}
         <Route path="/store/dashboard" element={<StoreDashboard />} />
         <Route path="/store/indent" element={<IndentAll />} />
         <Route path="/store/administration" element={<Administration />} />
-        <Route path="/store/store-out-approval" element={<StoreOutApproval />} />
+        <Route
+          path="/store/store-out-approval"
+          element={<StoreOutApproval />}
+        />
         <Route path="/store/pending-pos" element={<PendingPOs />} />
         <Route path="/store/create-po" element={<CreatePO />} />
         <Route path="/store/approve-indent" element={<ApproveIndent />} />
-        <Route path="/store/approve-indent-data" element={<ApprowIndentData />} />
+        <Route
+          path="/store/approve-indent-data"
+          element={<ApprowIndentData />}
+        />
         <Route path="/store/completed-items" element={<CompletedItems />} />
         <Route path="/store/inventory" element={<Inventory />} />
         <Route path="/store/receive-items" element={<ReceiveItems />} />
         <Route path="/store/user-indent" element={<UserIndent />} />
         <Route path="/store/user-indent-list" element={<UserIndentList />} />
-        <Route path="/store/user-indent-list-indent" element={<UserIndentListIndent />} />
-        <Route path="/store/user-requisition" element={<UserIndentListRequisition />} />
+        <Route
+          path="/store/user-indent-list-indent"
+          element={<UserIndentListIndent />}
+        />
+        <Route
+          path="/store/user-requisition"
+          element={<UserIndentListRequisition />}
+        />
         <Route path="/store/pending-indents" element={<PendingIndents />} />
         <Route path="/store/vendor-update" element={<VendorUpdate />} />
         <Route path="/store/repair-gate-pass" element={<RepairGatePass />} />
-        <Route path="/store/repair-gate-pass/history" element={<RepairGatePassHistory />} />
+        <Route
+          path="/store/repair-gate-pass/history"
+          element={<RepairGatePassHistory />}
+        />
         <Route path="/store/loading" element={<Loading />} />
         <Route path="/indent/all" element={<IndentAll />} />
         <Route path="/po/pending" element={<PoPending />} />

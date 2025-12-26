@@ -1,5 +1,29 @@
 // Store System API Services
-import { apiRequest, API_BASE_URL, getToken } from "../config/api";
+import { apiRequest, API_BASE_URL } from "../config/api";
+
+const PO_BASE_URL = "http://localhost:3004/api/po";
+
+function buildAuthHeaders() {
+  const token = localStorage.getItem("token");
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+async function fetchPoJson<T = unknown>(path: string): Promise<T> {
+  const normalizedPath = path.replace(/^\/+/, "");
+  const response = await fetch(`${PO_BASE_URL}/${normalizedPath}`, {
+    headers: {
+      "Content-Type": "application/json",
+      ...buildAuthHeaders(),
+    },
+  });
+
+  if (!response.ok) {
+    const body = await response.text();
+    throw new Error(body || `Failed to fetch PO ${path}`);
+  }
+
+  return (await response.json()) as T;
+}
 
 // Store Indent APIs
 export const storeApi = {
@@ -17,28 +41,20 @@ export const storeApi = {
       body: JSON.stringify(data),
     }),
   getStoreIndentDashboard: () => apiRequest("/store-indent/dashboard"),
-  downloadPendingIndents: () => {
-    const token = getToken();
-    return fetch(`${API_BASE_URL}/store-indent/pending/download`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }).then((res) => res.blob());
-  },
+  downloadPendingIndents: () =>
+    fetch(`${API_BASE_URL}/store-indent/pending/download`, {
+      headers: buildAuthHeaders(),
+    }).then((res) => res.blob()),
   // Repair Gate Pass APIs
   getRepairGatePassPending: () => apiRequest("/repair-gate-pass/pending"),
   getRepairGatePassReceived: () => apiRequest("/repair-gate-pass/received"),
   getRepairGatePassHistory: () => apiRequest("/repair-gate-pass/history"),
   getRepairGatePassCounts: () => apiRequest("/repair-gate-pass/counts"),
 
-  downloadHistoryIndents: () => {
-    const token = getToken();
-    return fetch(`${API_BASE_URL}/store-indent/history/download`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }).then((res) => res.blob());
-  },
+  downloadHistoryIndents: () =>
+    fetch(`${API_BASE_URL}/store-indent/history/download`, {
+      headers: buildAuthHeaders(),
+    }).then((res) => res.blob()),
 
   // Indent APIs
   getIndents: () => apiRequest("/indent"),
@@ -62,24 +78,16 @@ export const storeApi = {
     apiRequest(`/indent/status/${statusType}`),
 
   // Purchase Order APIs
-  getPoPending: () => apiRequest("/po/pending"),
-  getPoHistory: () => apiRequest("/po/history"),
-  downloadPoPending: () => {
-    const token = getToken();
-    return fetch(`${API_BASE_URL}/po/pending/download`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }).then((res) => res.blob());
-  },
-  downloadPoHistory: () => {
-    const token = getToken();
-    return fetch(`${API_BASE_URL}/po/history/download`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }).then((res) => res.blob());
-  },
+  getPoPending: () => fetchPoJson("pending"),
+  getPoHistory: () => fetchPoJson("history"),
+  downloadPoPending: () =>
+    fetch(`${PO_BASE_URL}/pending/download`, {
+      headers: buildAuthHeaders(),
+    }).then((res) => res.blob()),
+  downloadPoHistory: () =>
+    fetch(`${PO_BASE_URL}/history/download`, {
+      headers: buildAuthHeaders(),
+    }).then((res) => res.blob()),
 
   // Item APIs
   getItems: () => apiRequest("/items"),
@@ -127,4 +135,3 @@ export const storeApi = {
   getUser: (employeeId: string) => apiRequest(`/user/${employeeId}`),
   getMe: () => apiRequest("/user/me"),
 };
-
