@@ -335,7 +335,9 @@ export default function PendingIndents() {
       window.URL.revokeObjectURL(url);
     } catch (err) {
       console.error(`Failed to download ${type} purchase orders`, err);
-      toast.error("Unable to download the file right now.");
+      const message =
+        err instanceof Error ? err.message : "Unable to download the file right now.";
+      toast.error(message);
     } finally {
       setLoadingState(false);
     }

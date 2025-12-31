@@ -1,7 +1,7 @@
 // Store System API Services
 import { apiRequest, API_BASE_URL } from "../config/api";
 
-const PO_BASE_URL = "https://store-repair.sagartmt.com/api/po";
+const PO_BASE_URL = `${API_BASE_URL}/po`;
 
 function buildAuthHeaders() {
   const token = localStorage.getItem("token");
@@ -23,6 +23,31 @@ async function fetchPoJson<T = unknown>(path: string): Promise<T> {
   }
 
   return (await response.json()) as T;
+}
+
+async function downloadPoBlob(path: string): Promise<Blob> {
+  const normalizedPath = path.replace(/^\/+/, "");
+  const response = await fetch(`${PO_BASE_URL}/${normalizedPath}`, {
+    headers: buildAuthHeaders(),
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(text || `Failed to download PO ${path}`);
+  }
+
+  const contentType = response.headers.get("content-type") ?? "";
+  if (contentType.toLowerCase().includes("application/json")) {
+    const text = await response.text();
+    throw new Error(text || `Failed to download PO ${path}`);
+  }
+
+  const blob = await response.blob();
+  if (blob.size === 0) {
+    throw new Error("Received an empty file");
+  }
+
+  return blob;
 }
 
 // Store Indent APIs
@@ -80,14 +105,8 @@ export const storeApi = {
   // Purchase Order APIs
   getPoPending: () => fetchPoJson("pending"),
   getPoHistory: () => fetchPoJson("history"),
-  downloadPoPending: () =>
-    fetch(`${PO_BASE_URL}/pending/download`, {
-      headers: buildAuthHeaders(),
-    }).then((res) => res.blob()),
-  downloadPoHistory: () =>
-    fetch(`${PO_BASE_URL}/history/download`, {
-      headers: buildAuthHeaders(),
-    }).then((res) => res.blob()),
+  downloadPoPending: () => downloadPoBlob("pending/download"),
+  downloadPoHistory: () => downloadPoBlob("history/download"),
 
   // Item APIs
   getItems: () => apiRequest("/items"),
