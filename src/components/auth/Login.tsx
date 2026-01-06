@@ -78,26 +78,26 @@ export default function Login() {
   async function onSubmit(values: z.infer<typeof schema>) {
     try {
       form.setError("root", { message: "" }); // Clear previous errors
-      
+
       // Check if username is employee ID (format: S followed by numbers)
       const isEmployeeId = /^S\d+$/i.test(values.username.trim());
-      
+
       const loginData = {
         user_name: isEmployeeId ? undefined : values.username.trim(),
         employee_id: isEmployeeId ? values.username.trim() : undefined,
         password: values.password,
       };
-      
+
       const success = await login(loginData);
 
       if (success) {
         toast.success("Login successful!");
-        
+
         // Role-based redirect (StoreFMS logic)
         const token = localStorage.getItem("token");
         if (token) {
           const decoded = decodeToken(token) as { role?: string; employee_id?: string } | null;
-          
+
           if (decoded?.employee_id) {
             const emp = decoded.employee_id;
             // Store Out Only employees
@@ -115,7 +115,7 @@ export default function Login() {
               return;
             }
           }
-          
+
           // Admin or regular user
           if (decoded?.role === "admin") {
             setTimeout(() => {

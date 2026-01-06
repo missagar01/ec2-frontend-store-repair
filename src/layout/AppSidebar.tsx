@@ -36,6 +36,7 @@ const storeAdminLimitedSubItems = [
   // { name: "Administration", path: "/store/administration" },
   { name: "Inventory", path: "/store/inventory" },
   { name: "Repair Gate Pass", path: "/store/repair-gate-pass" },
+  { name: "Repair Follow Up", path: "/store/repair-followup" },
 ];
 
 const storeUserSubItems = [
@@ -67,17 +68,17 @@ const AppSidebar: React.FC = () => {
       // Store menu: Admin sees limited 3 pages, others based on employee ID or role
       return isStoreOutOnly
         ? storeAdminSubItems.filter(
-            (item) =>
-              item.path === "/store/store-out-approval" ||
-              item.path === "/store/completed-items"
-          )
+          (item) =>
+            item.path === "/store/store-out-approval" ||
+            item.path === "/store/completed-items"
+        )
         : isApproveIndentOnly
-        ? storeAdminSubItems.filter(
+          ? storeAdminSubItems.filter(
             (item) => item.path === "/store/approve-indent-data"
           )
-        : isAdmin
-        ? storeAdminLimitedSubItems // Admin sees only 3 pages
-        : storeUserSubItems; // Regular users see user pages
+          : isAdmin
+            ? storeAdminLimitedSubItems // Admin sees only 3 pages
+            : storeUserSubItems; // Regular users see user pages
     },
     [isAdmin, isStoreOutOnly, isApproveIndentOnly]
   );
@@ -85,10 +86,9 @@ const AppSidebar: React.FC = () => {
   return (
     <aside
       className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 h-screen transition-all duration-300 ease-in-out z-50 border-r border-gray-200 dark:border-gray-700 shadow-lg
-        ${
-          isExpanded || isMobileOpen
-            ? "w-[290px]"
-            : isHovered
+        ${isExpanded || isMobileOpen
+          ? "w-[290px]"
+          : isHovered
             ? "w-[290px]"
             : "w-[90px]"
         }
@@ -98,15 +98,14 @@ const AppSidebar: React.FC = () => {
       onMouseLeave={() => setIsHovered(false)}
     >
       <div
-        className={`${isExpanded || isHovered || isMobileOpen ? "py-3 -mx-5 px-5" : "py-4"} flex ${
-          !isExpanded && !isHovered && !isMobileOpen ? "lg:justify-center" : "justify-start"
-        }`}
+        className={`${isExpanded || isHovered || isMobileOpen ? "py-3 -mx-5 px-5" : "py-4"} flex ${!isExpanded && !isHovered && !isMobileOpen ? "lg:justify-center" : "justify-start"
+          }`}
       >
         <Link to="/store/dashboard" className={`flex items-center ${isExpanded || isHovered || isMobileOpen ? "w-full" : "gap-2 w-full"}`}>
           {isExpanded || isHovered || isMobileOpen ? (
-            <img 
-              src={Logo} 
-              alt="SAGAR TMT & PIPES Logo" 
+            <img
+              src={Logo}
+              alt="SAGAR TMT & PIPES Logo"
               className="w-full h-auto max-h-20 object-contain"
             />
           ) : (
@@ -130,11 +129,10 @@ const AppSidebar: React.FC = () => {
                     <li key={item.name}>
                       <Link
                         to={item.path}
-                        className={`menu-dropdown-item ${
-                          isActive(item.path)
-                            ? "menu-dropdown-item-active"
-                            : "menu-dropdown-item-inactive"
-                        }`}
+                        className={`menu-dropdown-item ${isActive(item.path)
+                          ? "menu-dropdown-item-active"
+                          : "menu-dropdown-item-inactive"
+                          }`}
                       >
                         {item.name}
                       </Link>
@@ -146,7 +144,7 @@ const AppSidebar: React.FC = () => {
 
           </div>
         </nav>
-        
+
         {/* User Info and Logout Button */}
         {(isExpanded || isHovered || isMobileOpen) && !hideUserProfileSection && (
           <div className="mt-auto border-t border-indigo-200/50 dark:border-indigo-800/50 pt-4 pb-4">

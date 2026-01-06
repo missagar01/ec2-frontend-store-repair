@@ -12,7 +12,7 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = getToken();
-    
+
     // Check if token is expired before making request
     if (token && isTokenExpired(token)) {
       removeToken();
@@ -21,12 +21,12 @@ axiosInstance.interceptors.request.use(
       }
       return Promise.reject(new Error('Token expired'));
     }
-    
+
     // Add token to request headers
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    
+
     return config;
   },
   (error) => {
@@ -43,7 +43,7 @@ axiosInstance.interceptors.response.use(
     // Handle 401 Unauthorized or 403 Forbidden
     if (error.response) {
       const status = error.response.status;
-      
+
       if (status === 401 || status === 403) {
         removeToken();
         if (window.location.pathname !== "/login" && window.location.pathname !== "/signin") {
@@ -51,7 +51,7 @@ axiosInstance.interceptors.response.use(
         }
       }
     }
-    
+
     return Promise.reject(error);
   }
 );

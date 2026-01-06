@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const storedToken = getToken();
     const storedUser = localStorage.getItem('user');
-    
+
     if (storedToken && !isTokenExpired(storedToken)) {
       const decoded = decodeToken(storedToken);
       if (decoded) {
@@ -59,10 +59,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = async (data: LoginRequest): Promise<boolean> => {
     try {
       const response = await authApi.login(data);
-      
+
       if (response && response.success && response.token) {
         setToken(response.token);
-        
+
         // Handle user data - might be string ID or number
         const decoded = response.token ? decodeToken(response.token) : null;
         const userData = response.user || {
@@ -73,13 +73,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           user_access: decoded?.user_access || null,
           department: decoded?.department || null,
         };
-        
+
         // Ensure department/user_access is included from response
         if (response.user) {
           userData.user_access = response.user.user_access || response.user.department || userData.user_access;
           userData.department = response.user.department || response.user.user_access || userData.department;
         }
-        
+
         setUser(userData);
         localStorage.setItem('token', response.token);
         localStorage.setItem('user', JSON.stringify(userData));

@@ -24,6 +24,7 @@ import UserIndentListRequisition from "./pages/store/UserIndentListRequisition";
 import VendorUpdate from "./pages/store/VendorUpdate";
 import RepairGatePass from "./pages/store/RepairGatePass";
 import RepairGatePassHistory from "./pages/store/RepairGatePassHistory";
+import RepairFollowup from "./pages/store/RepairFollowup";
 
 // Store page aliases for routing
 const PoPending = PendingPOs;
@@ -90,6 +91,7 @@ function AppRoutes() {
           path="/store/repair-gate-pass/history"
           element={<RepairGatePassHistory />}
         />
+        <Route path="/store/repair-followup" element={<RepairFollowup />} />
         <Route path="/store/loading" element={<Loading />} />
         <Route path="/indent/all" element={<IndentAll />} />
         <Route path="/po/pending" element={<PoPending />} />
