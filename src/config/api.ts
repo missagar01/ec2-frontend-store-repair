@@ -1,5 +1,5 @@
 const envApi = import.meta.env.VITE_API_URL;
-const DEFAULT_API = "https://store-repair.sagartmt.com/api";
+const DEFAULT_API = "http://65.0.6.120/api";
 
 const finalApiUrl = envApi || DEFAULT_API;
 
