@@ -34,6 +34,7 @@ type GatePassRow = {
     planned2?: string;
     actual2?: string;
     gate_pass_status?: string;
+    extended_date?: string;
 };
 
 const PAGE_SIZE = 50;
@@ -45,11 +46,12 @@ export default function RepairFollowup() {
     const [currentPage, setCurrentPage] = useState(1);
     const [processingId, setProcessingId] = useState<number | null>(null);
     const [stage2Status, setStage2Status] = useState("");
-    const [gatePassStatus, setGatePassStatus] = useState<"pending" | "completed">("pending");
-
-
-    // 🔥 STATE CONTROLS TAB (NO ROUTE REQUIRED)
+    const [gatePassStatus, setGatePassStatus] = useState<"pending" | "completed" | "date extended">("pending");
     const [activeTab, setActiveTab] = useState<"pending" | "history">("pending");
+    const [showPopup, setShowPopup] = useState(false);
+    const [selectedRow, setSelectedRow] = useState<GatePassRow | null>(null);
+    const [extendedDate, setExtendedDate] = useState("");
+
 
     const isCompleted = (status?: string) =>
         status?.toLowerCase() === "completed";
@@ -85,6 +87,12 @@ export default function RepairFollowup() {
         return () => { active = false; };
     }, [activeTab]);
 
+    useEffect(() => {
+        if (showPopup && selectedRow && stage2Status === "") {
+            setStage2Status(selectedRow.stage2_status || "");
+        }
+    }, [showPopup]);
+
 
     /* ================= SEARCH ================= */
     const query = search.trim().toLowerCase();
@@ -108,19 +116,28 @@ export default function RepairFollowup() {
     const handleProcess = async (row: GatePassRow) => {
         if (!row.id) return;
 
+        const payload: any = {
+            stage2_status: stage2Status,
+            gate_pass_status: gatePassStatus,
+        };
+
+        // ONLY when Extend Date
+        if (gatePassStatus === "date extended") {
+            payload.extended_date = extendedDate;
+        }
+
         try {
-            const res = await repairFollowupApi.updateStage2(row.id, {
-                stage2_status: stage2Status,
-                gate_pass_status: gatePassStatus,
-            });
+            const res = await repairFollowupApi.updateStage2(row.id, payload);
 
             if (res.success) {
-                toast.success("Process completed");
-                setProcessingId(null);
+                toast.success("Updated successfully");
+
+                setShowPopup(false);
                 setStage2Status("");
+                setExtendedDate("");
+                setSelectedRow(null);
                 setGatePassStatus("pending");
 
-                // refresh
                 setRows(prev =>
                     prev.map(r => (r.id === row.id ? { ...r, ...res.data } : r))
                 );
@@ -128,7 +145,10 @@ export default function RepairFollowup() {
         } catch {
             toast.error("Failed to process");
         }
+        console.log("SENDING PAYLOAD:", payload);
+
     };
+
 
 
     return (
@@ -246,6 +266,8 @@ export default function RepairFollowup() {
                                     Follow Up Remark</th>
                                 <th className="px-3 py-2 text-left font-semibold text-gray-700 whitespace-nowrap">
                                     Status</th>
+                                {activeTab === "pending" && <th className="px-3 py-2 text-left font-semibold text-gray-700 whitespace-nowrap">
+                                    Extended Date</th>}
                             </tr>
                         </thead>
 
@@ -254,40 +276,19 @@ export default function RepairFollowup() {
                                 <tr key={idx} className="border-b even:bg-gray-50 hover:bg-blue-50 transition-colors">
                                     {activeTab === "pending" && (
                                         <td className="px-3 py-2 whitespace-nowrap">
-                                            {processingId === row.id ? (
-                                                <div className="flex gap-2 items-center">
-                                                    <Input
-                                                        placeholder="add remark"
-                                                        value={stage2Status}
-                                                        onChange={e => setStage2Status(e.target.value)}
-                                                        className="w-32"
-                                                    />
-
-                                                    <select
-                                                        value={gatePassStatus}
-                                                        onChange={e => setGatePassStatus(e.target.value as any)}
-                                                        className="border rounded px-2 py-1 text-sm"
-                                                    >
-                                                        <option value="pending">Pending</option>
-                                                        <option value="completed">Completed</option>
-                                                    </select>
-
-                                                    <Button size="sm" onClick={() => handleProcess(row)}
-                                                        className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md"
-                                                    >
-                                                        Save
-                                                    </Button>
-                                                </div>
-                                            ) : (
-                                                <Button
-                                                    size="sm"
-                                                    variant="outline"
-                                                    onClick={() => setProcessingId(row.id!)}
-                                                    className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-md"
-                                                >
-                                                    Process
-                                                </Button>
-                                            )}
+                                            <Button
+                                                size="sm"
+                                                variant="outline"
+                                                onClick={() => {
+                                                    setSelectedRow(row);
+                                                    setStage2Status(row.stage2_status || "");
+                                                    setGatePassStatus("completed"); // default intention when processing
+                                                    setShowPopup(true);
+                                                }}
+                                                className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-md"
+                                            >
+                                                Process
+                                            </Button>
                                         </td>
                                     )}
                                     {(activeTab === "pending") && (
@@ -315,12 +316,70 @@ export default function RepairFollowup() {
                                     {/* {activeTab === "history" && <td className="px-3 py-2 whitespace-nowrap">{row.stage2_status}</td>} */}
                                     <td className="px-3 py-2 whitespace-nowrap">{row.stage2_status}</td>
                                     <td className="font-semibold">{row.gate_pass_status}</td>
+                                    {activeTab === "pending" && <td className="px-3 py-2 whitespace-nowrap">{formatDate(row.extended_date)}</td>}
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                 )}
             </div>
+
+            {showPopup && selectedRow && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+                    <div className="bg-white rounded-lg w-full max-w-md p-5 shadow-lg">
+
+                        {/* HEADER */}
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-lg font-semibold">Process Gate Pass</h3>
+                            <button onClick={() => setShowPopup(false)} className="text-gray-500">✕</button>
+                        </div>
+
+                        {/* REMARK */}
+                        <Input
+                            placeholder="Add remark"
+                            value={stage2Status}
+                            onChange={e => setStage2Status(e.target.value)}
+                            className="mb-3"
+                        />
+
+                        {/* STATUS */}
+                        <select
+                            value={gatePassStatus}
+                            onChange={e => setGatePassStatus(e.target.value as any)}
+                            className="border rounded w-full px-2 py-2 mb-3"
+                        >
+                            <option value="completed">Completed</option>
+                            <option value="date extended">Extend Date</option>
+                        </select>
+
+                        {/* DATE EXTENDED */}
+                        {gatePassStatus === "date extended" && (
+                            <Input
+                                type="date"
+                                value={extendedDate}
+                                onChange={e => setExtendedDate(e.target.value)}
+                                className="mb-3"
+                            />
+                        )}
+
+                        {/* ACTIONS */}
+                        <div className="flex justify-end gap-2">
+                            <Button variant="outline" onClick={() => setShowPopup(false)}>
+                                Cancel
+                            </Button>
+
+                            <Button
+                                className="bg-blue-600 text-white"
+                                onClick={() => handleProcess(selectedRow)}
+                            >
+                                Save
+                            </Button>
+
+                        </div>
+                    </div>
+                </div>
+            )}
+
         </div >
     );
 }

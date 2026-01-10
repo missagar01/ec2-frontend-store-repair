@@ -46,8 +46,9 @@ export interface RepairFollowupResponse {
 }
 
 export interface RepairFollowupStage2Payload {
-    stage2_status: string;     // e.g. "completed"
-    gate_pass_status: string; // e.g. "Closed"
+    stage2_status: string;
+    gate_pass_status: string;
+    extended_date?: string;
 }
 
 export const repairFollowupApi = {
