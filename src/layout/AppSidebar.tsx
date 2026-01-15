@@ -37,13 +37,16 @@ const storeAdminLimitedSubItems = [
   { name: "Inventory", path: "/store/inventory" },
   { name: "Repair Gate Pass", path: "/store/repair-gate-pass" },
   { name: "Repair Follow Up", path: "/store/repair-followup" },
+  { name: "Settings", path: "/store/settings" },
+
 ];
 
 const storeUserSubItems = [
-  { name: "Indent", path: "/store/user-indent-list-indent" },
+  { name: "My Indent", path: "/store/user-indent-list-indent" },
   { name: "Requisition", path: "/store/user-requisition" },
   { name: "Create Indent", path: "/store/user-indent" },
 ];
+
 
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
@@ -63,25 +66,53 @@ const AppSidebar: React.FC = () => {
   const isApproveIndentOnly = employeeId === "S00116";
   const hideUserProfileSection = location.pathname === "/store/dashboard";
 
-  const storeMenuItems = useMemo(
-    () => {
-      // Store menu: Admin sees limited 3 pages, others based on employee ID or role
-      return isStoreOutOnly
-        ? storeAdminSubItems.filter(
-          (item) =>
-            item.path === "/store/store-out-approval" ||
-            item.path === "/store/completed-items"
-        )
-        : isApproveIndentOnly
-          ? storeAdminSubItems.filter(
-            (item) => item.path === "/store/approve-indent-data"
-          )
-          : isAdmin
-            ? storeAdminLimitedSubItems // Admin sees only 3 pages
-            : storeUserSubItems; // Regular users see user pages
-    },
-    [isAdmin, isStoreOutOnly, isApproveIndentOnly]
-  );
+  const storeAccessList = useMemo(() => {
+    return (user?.store_access || "")
+      .split(",")
+      .map(v => v.trim().toUpperCase())
+      .filter(Boolean);
+  }, [user?.store_access]);
+
+  const userExtraAdminItems = useMemo(() => {
+    if (!storeAccessList.length) return [];
+
+    return storeAdminLimitedSubItems.filter(item =>
+      storeAccessList.includes(item.name.toUpperCase())
+    );
+  }, [storeAccessList]);
+
+
+  const storeMenuItems = useMemo(() => {
+    if (isStoreOutOnly) {
+      return storeAdminSubItems.filter(
+        item =>
+          item.path === "/store/store-out-approval" ||
+          item.path === "/store/completed-items"
+      );
+    }
+
+    if (isApproveIndentOnly) {
+      return storeAdminSubItems.filter(
+        item => item.path === "/store/approve-indent-data"
+      );
+    }
+
+    if (isAdmin) {
+      return storeAdminLimitedSubItems;
+    }
+
+    // 👇 USER ROLE WITH STORE ACCESS
+    return [
+      ...storeUserSubItems,
+      ...userExtraAdminItems,
+    ];
+  }, [
+    isAdmin,
+    isStoreOutOnly,
+    isApproveIndentOnly,
+    userExtraAdminItems,
+  ]);
+
 
   return (
     <aside
@@ -102,7 +133,7 @@ const AppSidebar: React.FC = () => {
           }`}
       >
         <Link to="/store/dashboard" className={`flex items-center ${isExpanded || isHovered || isMobileOpen ? "w-full" : "gap-2 w-full"}`}>
-          {isExpanded || isHovered || isMobileOpen ? (
+          {/* {isExpanded || isHovered || isMobileOpen ? (
             <img
               src={Logo}
               alt="SAGAR TMT & PIPES Logo"
@@ -112,7 +143,7 @@ const AppSidebar: React.FC = () => {
             <div className="bg-red-600 rounded-lg p-2.5 flex items-center justify-center shadow-md mx-auto w-12 h-12">
               <span className="text-white font-bold text-xl">S</span>
             </div>
-          )}
+          )} */}
         </Link>
       </div>
       <div className="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar h-full">

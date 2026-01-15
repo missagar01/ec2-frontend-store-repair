@@ -10,6 +10,7 @@ interface User {
   access?: string[];
   user_access?: string;
   department?: string;
+  store_access?: string;
 }
 
 interface AuthContextType {
