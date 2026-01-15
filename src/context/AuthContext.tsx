@@ -8,8 +8,8 @@ interface User {
   employee_id?: string;
   role: string;
   access?: string[];
-  user_access?: string;
-  department?: string;
+  user_access?: string | null;
+  department?: string | null;
   store_access?: string;
 }
 
@@ -42,10 +42,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         } else {
           // Create user from token if not in storage
           setUser({
-            id: decoded.id || decoded.sub || 0,
-            user_name: decoded.user_name || decoded.username || '',
-            employee_id: decoded.employee_id || '',
-            role: decoded.role || '',
+            id: Number(decoded.id) || Number(decoded.sub) || 0,
+            user_name: (decoded.user_name as string) || (decoded.username as string) || '',
+            employee_id: (decoded.employee_id as string) || '',
+            role: (decoded.role as string) || '',
             access: [],
           });
         }
@@ -66,19 +66,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         // Handle user data - might be string ID or number
         const decoded = response.token ? decodeToken(response.token) : null;
-        const userData = response.user || {
-          id: decoded?.id || null,
+        const userData: User = response.user || {
+          id: Number(decoded?.id) || 0,
           user_name: data.user_name || data.employee_id || '',
-          employee_id: data.employee_id || null,
-          role: decoded?.role || 'user',
-          user_access: decoded?.user_access || null,
-          department: decoded?.department || null,
+          employee_id: data.employee_id || '',
+          role: String(decoded?.role) || 'user',
+          user_access: String(decoded?.user_access) || null,
+          department: String(decoded?.department) || null,
+          access: [],
+          store_access: '',
         };
 
         // Ensure department/user_access is included from response
         if (response.user) {
-          userData.user_access = response.user.user_access || response.user.department || userData.user_access;
-          userData.department = response.user.department || response.user.user_access || userData.department;
+          userData.user_access = userData.user_access || userData.department || userData.user_access;
+          userData.department = userData.department || userData.user_access || userData.department;
         }
 
         setUser(userData);
