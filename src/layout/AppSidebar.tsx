@@ -49,7 +49,7 @@ const storeUserSubItems = [
 
 
 const AppSidebar: React.FC = () => {
-  const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
+  const { isExpanded, isMobileOpen, isHovered, setIsHovered, setIsMobileOpen, } = useSidebar();
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
@@ -58,6 +58,13 @@ const AppSidebar: React.FC = () => {
     (path: string) => location.pathname === path,
     [location.pathname]
   );
+
+  const handleSidebarLinkClick = () => {
+    if (isMobileOpen) {
+      setIsMobileOpen(false);
+    }
+  };
+
 
   // Build store menu based on role/employee (mirrors StoreFMS logic)
   const employeeId = (user?.employee_id || "").toUpperCase();
@@ -160,6 +167,7 @@ const AppSidebar: React.FC = () => {
                     <li key={item.name}>
                       <Link
                         to={item.path}
+                        onClick={handleSidebarLinkClick}
                         className={`menu-dropdown-item ${isActive(item.path)
                           ? "menu-dropdown-item-active"
                           : "menu-dropdown-item-inactive"

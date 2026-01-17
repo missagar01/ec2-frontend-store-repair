@@ -21,6 +21,7 @@ type UserRow = {
 /* ================= CONSTANTS ================= */
 
 const STORE_ACCESS_OPTIONS = [
+    "Indent",
     "Purchase Order",
     "Inventory",
     "Repair Gate Pass",
