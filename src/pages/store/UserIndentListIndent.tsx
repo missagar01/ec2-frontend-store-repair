@@ -14,6 +14,7 @@ type IndentRow = {
   formType?: string;
   requestNumber?: string;
   indentSeries?: string;
+  indentNumber?: string;
   requesterName?: string;
   department?: string;
   division?: string;
@@ -64,8 +65,8 @@ export default function UserIndentListIndent() {
         const list = Array.isArray(res?.data)
           ? res.data
           : Array.isArray(res)
-          ? res
-          : [];
+            ? res
+            : [];
 
         const mapped = list
           .map((r: any) => ({
@@ -78,6 +79,7 @@ export default function UserIndentListIndent() {
             formType: r.form_type ?? r.formType ?? "",
             requestNumber: r.request_number ?? r.requestNumber ?? "",
             indentSeries: r.indent_series ?? r.indentSeries ?? "",
+            indentNumber: r.indent_number ?? r.indentNumber ?? "",
             requesterName: r.requester_name ?? r.requesterName ?? "",
             department: r.department ?? "",
             division: r.division ?? "",
@@ -91,7 +93,7 @@ export default function UserIndentListIndent() {
             requestStatus: r.request_status ?? "",
           }))
           .filter(
-            (row: IndentRow) => (row.formType || "").toUpperCase() === "INDENT"
+            (row: IndentRow) => (row.formType || "").toUpperCase() === "INDENT" && Boolean(row.indentNumber?.trim())
           );
 
         setRows(mapped);
@@ -194,6 +196,7 @@ export default function UserIndentListIndent() {
   }, [rows]);
 
   const columns: ColumnDef<IndentRow>[] = [
+    { accessorKey: "indentNumber", header: "Indent No." },
     {
       accessorKey: "timestamp",
       header: "Timestamp",

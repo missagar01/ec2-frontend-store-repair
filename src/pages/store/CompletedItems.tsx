@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { CheckCircle, XCircle } from "lucide-react";
+import { CheckCircle } from "lucide-react";
 import { toast } from "sonner";
 import { ColumnDef } from "@tanstack/react-table";
 
@@ -71,6 +71,11 @@ const mapApiRowToIndent = (rec: Record<string, unknown>): IndentRow => {
 export default function CompletedItems() {
   const [rows, setRows] = useState<IndentRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedIndent, setSelectedIndent] = useState<IndentRow | null>(null);
+  const [indentNumber, setIndentNumber] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
 
   useEffect(() => {
     let active = true;
@@ -122,6 +127,18 @@ export default function CompletedItems() {
 
   const columns: ColumnDef<IndentRow>[] = useMemo(
     () => [
+      {
+        id: "process",
+        header: "Action",
+        cell: ({ row }) => (
+          <button
+            onClick={() => openProcessModal(row.original)}
+            className="px-3 py-1 text-sm font-medium text-white bg-blue-600 rounded hover:bg-blue-700"
+          >
+            Process
+          </button>
+        ),
+      },
       {
         accessorKey: "createdAt",
         header: "Created At",
@@ -182,6 +199,55 @@ export default function CompletedItems() {
     []
   );
 
+  const openProcessModal = (row: IndentRow) => {
+    setSelectedIndent(row);
+    setIndentNumber("");
+    setShowModal(true);
+  };
+
+  const closeProcessModal = () => {
+    setShowModal(false);
+    setSelectedIndent(null);
+    setIndentNumber("");
+  };
+
+  const handleSubmitIndentNumber = async () => {
+    if (!selectedIndent?.requestNumber) return;
+
+    if (!indentNumber.trim()) {
+      toast.error("Indent number is required");
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+
+      await storeApi.updateIndentNumber(
+        selectedIndent.requestNumber,
+        indentNumber.trim()
+      );
+
+      toast.success("Indent number updated successfully");
+
+      // Optional: update UI row locally
+      setRows((prev) =>
+        prev.map((r) =>
+          r.requestNumber === selectedIndent.requestNumber
+            ? { ...r, updatedAt: new Date().toISOString() }
+            : r
+        )
+      );
+
+      closeProcessModal();
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err?.message || "Failed to update indent number");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+
   return (
     <div className="w-full p-4 md:p-6 lg:p-8">
       <Heading
@@ -190,7 +256,7 @@ export default function CompletedItems() {
       >
         <div className="flex">
           <CheckCircle className="text-green-500" size={40} />
-          <XCircle className="text-red-500" size={40} />
+          {/* <XCircle className="text-red-500" size={40} /> */}
         </div>
       </Heading>
 
@@ -203,6 +269,68 @@ export default function CompletedItems() {
           className="h-[75dvh]"
         />
       </div>
+
+      {showModal && selectedIndent && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-6 relative">
+            {/* Close button */}
+            <button
+              onClick={closeProcessModal}
+              className="absolute top-3 right-3 text-gray-500 hover:text-black"
+            >
+              ✕
+            </button>
+
+            <h2 className="text-lg font-semibold mb-4">Process Indent</h2>
+
+            {/* Request Number (readonly) */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Request Number
+              </label>
+              <input
+                type="text"
+                value={selectedIndent.requestNumber || ""}
+                disabled
+                className="w-full px-3 py-2 border rounded bg-gray-100"
+              />
+            </div>
+
+            {/* Indent Number */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Indent Number
+              </label>
+              <input
+                type="text"
+                value={indentNumber}
+                onChange={(e) => setIndentNumber(e.target.value)}
+                placeholder="Enter indent number"
+                className="w-full px-3 py-2 border rounded"
+              />
+            </div>
+
+            {/* Actions */}
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={closeProcessModal}
+                className="px-4 py-2 border rounded"
+                disabled={submitting}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSubmitIndentNumber}
+                disabled={submitting}
+                className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700 disabled:opacity-60"
+              >
+                {submitting ? "Saving..." : "Save"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

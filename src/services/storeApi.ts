@@ -90,15 +90,26 @@ export const storeApi = {
       method: "POST",
       body: JSON.stringify(data),
     }),
+
   updateIndentStatus: (requestNumber: string, data: any) =>
     apiRequest(`/indent/${requestNumber}/status`, {
       method: "PUT",
       body: JSON.stringify(data),
     }),
+
+  updateIndentNumber: (requestNumber: string, indentNumber: string) =>
+    apiRequest(`/indent/${requestNumber}/indent-number`, {
+      method: "PATCH",
+      body: JSON.stringify({
+        indent_number: indentNumber,
+      }),
+    }),
+
   filterIndents: (params: any) => {
     const queryString = new URLSearchParams(params).toString();
     return apiRequest(`/indent/filter?${queryString}`);
   },
+
   getIndentsByStatus: (statusType: string) =>
     apiRequest(`/indent/status/${statusType}`),
 

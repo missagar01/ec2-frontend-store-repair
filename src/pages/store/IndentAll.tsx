@@ -39,7 +39,7 @@ export default function IndentAll() {
     setError(null);
     try {
       const res = await storeApi.getAllIndents();
-      
+
       // Handle different response structures
       const payload = Array.isArray(res?.data)
         ? res.data
@@ -203,13 +203,12 @@ export default function IndentAll() {
                         <td className="p-2">{row.formType || "—"}</td>
                         <td className="p-2">
                           <span
-                            className={`px-2 py-1 rounded text-xs ${
-                              row.status?.toUpperCase() === "APPROVED"
-                                ? "bg-green-100 text-green-800"
-                                : row.status?.toUpperCase() === "REJECTED"
+                            className={`px-2 py-1 rounded text-xs ${row.status?.toUpperCase() === "APPROVED"
+                              ? "bg-green-100 text-green-800"
+                              : row.status?.toUpperCase() === "REJECTED"
                                 ? "bg-red-100 text-red-800"
                                 : "bg-yellow-100 text-yellow-800"
-                            }`}
+                              }`}
                           >
                             {row.status || "Pending"}
                           </span>

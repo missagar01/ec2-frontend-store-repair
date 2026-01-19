@@ -49,8 +49,8 @@ export default function UserIndentList() {
         const payload: unknown[] = Array.isArray(resData)
           ? resData
           : Array.isArray(res as unknown[])
-          ? (res as unknown[])
-          : [];
+            ? (res as unknown[])
+            : [];
 
         const mapped = payload
           .map((r: any) => ({
