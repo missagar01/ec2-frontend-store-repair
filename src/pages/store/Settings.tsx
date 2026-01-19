@@ -26,6 +26,10 @@ const STORE_ACCESS_OPTIONS = [
     "Inventory",
     "Repair Gate Pass",
     "Repair Follow Up",
+    "Store GRN",
+    "Store GRN Admin Approval",
+    "Store GRN GM Approval",
+    "Store GRN Close",
 ];
 
 /* ================= COMPONENT ================= */

@@ -39,6 +39,10 @@ const storeAdminLimitedSubItems = [
   { name: "Inventory", path: "/store/inventory" },
   { name: "Repair Gate Pass", path: "/store/repair-gate-pass" },
   { name: "Repair Follow Up", path: "/store/repair-followup" },
+  { name: "Store GRN", path: "/store/store-grn" },
+  { name: "Store GRN Admin Approval", path: "/store/store-grn-admin" },
+  { name: "Store GRN GM Approval", path: "/store/store-grn-gm" },
+  { name: "Store GRN Close", path: "/store/store-grn-close" },
   { name: "Settings", path: "/store/settings" },
 
 ];

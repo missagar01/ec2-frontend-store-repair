@@ -14,14 +14,14 @@ type DashboardApiResponse = {
     pendingIndents: number;
     upcomingIndents: number;
     overdueIndents: number;
-    
+
     // Progress percentages
     overallProgress: number;
     completedPercent: number;
     pendingPercent: number;
     upcomingPercent: number;
     overduePercent: number;
-    
+
     // Quantity metrics
     totalIndentedQuantity: number;
     totalPurchaseOrders: number;
@@ -65,9 +65,9 @@ export default function StoreDashboard() {
           storeApi.getStoreIndentDashboard() as Promise<DashboardApiResponse>,
           storeApi.getRepairGatePassCounts() as Promise<RepairGatePassCounts>,
         ]);
-        
+
         if (!active) return;
-        
+
         // Handle dashboard data
         if (dashboardRes.status === 'fulfilled' && dashboardRes.value) {
           const res = dashboardRes.value;
@@ -228,7 +228,7 @@ export default function StoreDashboard() {
       </div>
 
       {/* Status Cards (like housekeeping) - Top Section */}
-    
+
       <div className="grid gap-4 lg:grid-cols-[1.6fr_1fr] mt-6">
         <div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -376,7 +376,7 @@ export default function StoreDashboard() {
       </div>
 
       {/* Original Metric Cards */}
-     
+
 
       {/* Progress Reports Section */}
       <Card className="bg-white dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-800 shadow-lg">

@@ -26,6 +26,10 @@ import RepairGatePass from "./pages/store/RepairGatePass";
 import RepairGatePassHistory from "./pages/store/RepairGatePassHistory";
 import RepairFollowup from "./pages/store/RepairFollowup";
 import Settings from "./pages/store/Settings";
+import StoreGRN from "./pages/store/StoreGRN";
+import StoreGRNAdmin from "./pages/store/StoreGRNAdminApproval";
+import StoreGRNGM from "./pages/store/StoreGRNGMApproval";
+import StoreGRNCloseBill from "./pages/store/StoreGRNCloseBill";
 
 // Store page aliases for routing
 const PoPending = PendingPOs;
@@ -94,6 +98,11 @@ function AppRoutes() {
         />
         <Route path="/store/repair-followup" element={<RepairFollowup />} />
         <Route path="/store/settings" element={<Settings />} />
+        <Route path="/store/store-grn" element={<StoreGRN />} />
+        <Route path="/store/store-grn-admin" element={<StoreGRNAdmin />} />
+        <Route path="/store/store-grn-gm" element={<StoreGRNGM />} />
+        <Route path="/store/store-grn-close" element={<StoreGRNCloseBill />} />
+
         <Route path="/store/loading" element={<Loading />} />
         <Route path="/indent/all" element={<IndentAll />} />
         <Route path="/po/pending" element={<PoPending />} />
