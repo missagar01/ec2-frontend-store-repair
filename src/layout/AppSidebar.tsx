@@ -4,7 +4,7 @@ import { LogOut } from "lucide-react";
 import { UserCircleIcon } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
 import { useAuth } from "../context/AuthContext";
-import Logo from "../asset/Logo.jpeg";
+// import Logo from "../asset/Logo.jpeg";
 
 const storeAdminSubItems = [
   { name: "Dashboard", path: "/store/dashboard" },
@@ -26,6 +26,8 @@ const storeAdminSubItems = [
   { name: "Repair Gate Pass - Pending", path: "/store/repair-gate-pass" },
   { name: "Repair Gate Pass - History", path: "/store/repair-gate-pass/history" },
   { name: "Administration", path: "/store/administration" },
+  { name: "Repair Follow Up", path: "/store/repair-followup" },
+  { name: "Settings", path: "/store/settings" },
 ];
 
 // Admin store pages (as per StoreFMS main.tsx)
